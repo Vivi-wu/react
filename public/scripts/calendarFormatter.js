@@ -1,6 +1,11 @@
 var supportFormat = [
     {
+        'pattern': '',
+        'description': ' -- 样式不断添加中 -- '
+    },
+    {
         'pattern': 'YYYY-MM-DD HH:MM:SS',
+        'description': 'YYYY-MM-DD HH:MM:SS',
         'func': function(data) {
             return format1(data)
         }
@@ -38,14 +43,11 @@ class DatetimeFormatterResult extends React.Component {
 
 class DatetimeFormatterInput extends React.Component {
     constructor(props) {
-        super(props);
-        this.state = {
-            datetime: '',
-            format: ''
-        }
-        this.handleDateInputChange = this.handleDateInputChange.bind(this);
-        this.handleFormatChange = this.handleFormatChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        super(props)
+        this.state = { datetime: '', format: '' }
+        this.handleDateInputChange = this.handleDateInputChange.bind(this)
+        this.handleFormatChange = this.handleFormatChange.bind(this)
+        this.handleSubmit = this.handleSubmit.bind(this)
     }
 
     handleDateInputChange(e) {
@@ -57,12 +59,10 @@ class DatetimeFormatterInput extends React.Component {
     }
 
     handleSubmit(e) {
+        var datetime = this.state.datetime.trim(),
+              format = this.state.format.trim();
         e.preventDefault();
-        var datetime = this.state.datetime.trim();
-        var format = this.state.format.trim();
-        if (!datetime || !format) {
-          return;
-        }
+        if (!datetime || !format) { return }
         this.props.onFormatterSubmit({datetime: datetime, format: format})
     }
 
@@ -81,8 +81,9 @@ class DatetimeFormatterInput extends React.Component {
                 <div className="input-group">
                     <label>这里选择输出样式：</label>
                     <select value={this.state.format} onChange={this.handleFormatChange}>
-                      <option value="">-- 样式不断添加中 --</option>
-                      <option value="YYYY-MM-DD HH:MM:SS">YYYY-MM-DD HH:MM:SS</option>
+                        {this.props.data.map((item, index) => (
+                            <option key={index} value={item.pattern}>{item.description}</option>
+                        ))}
                     </select>
                 </div>
                 <button type="submit">见证奇迹~</button>
@@ -93,29 +94,27 @@ class DatetimeFormatterInput extends React.Component {
 
 class DatetimeFormatter extends React.Component {
     constructor(props) {
-        super(props);
-        this.state = {
-            result: '',
-            datetime: '',
-            format: ''
-        };
-        this.handleInputChange = this.handleInputChange.bind(this);
+        super(props)
+        this.state = { result: '' }
+        this.handleInputChange = this.handleInputChange.bind(this)
     }
 
     convertDatatimeFormat(dateString, format) {
         var i = 0, j = supportFormat.length;
         for (i; i < j; i++) {
-            if (new RegExp(supportFormat[i].pattern, 'i').test(format)) {
-                return supportFormat[i].func(dateString)
+            if (supportFormat[i].pattern) {
+                if (new RegExp(supportFormat[i].pattern, 'i').test(format)) {
+                    return supportFormat[i].func(dateString)
+                }
+            } else {
+                continue
             }
         }
         console.log('Oops! The format is out of our capacity.')
     }
 
     handleInputChange(data) {
-        var d = data.datetime, f = data.format,
-            r = this.convertDatatimeFormat(d, f);
-        this.setState({result: r, datetime: d, format: f})
+        this.setState({ result: this.convertDatatimeFormat(data.datetime, data.format) })
     }
 
     render() {
@@ -123,11 +122,16 @@ class DatetimeFormatter extends React.Component {
             <div>
                 <h2>按指定格式输出日期时间~</h2>
                 <DatetimeFormatterResult data={this.state.result} />
-                <DatetimeFormatterInput  onFormatterSubmit={this.handleInputChange} />
+                <DatetimeFormatterInput  onFormatterSubmit={this.handleInputChange} data={this.props.formatList} />
             </div>
         )
     }
 }
+
+// Specifies the default values for Root component's props
+DatetimeFormatter.defaultProps = {
+  formatList: supportFormat
+};
 
 ReactDOM.render(
   <DatetimeFormatter />,
