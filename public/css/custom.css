@@ -1,0 +1,44 @@
+select {padding-top:1px;padding-bottom:1px;}
+button {
+  border: 1px solid #ff6d50;
+  border-radius: 1px;
+  background-color: rgba(255, 109, 80, 0.7);
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: large;
+  cursor: pointer;
+  color: white;
+}
+button:hover{background-color: #ff6d50;}
+.input-group {margin-bottom:15px;}
+.input-group label {
+  font-weight: bold;
+  vertical-align: middle;
+  display: inline-block;
+  min-width: 150px;
+}
+.input-group input,
+.input-group select {
+  border-radius: 1px;
+  border: 1px solid grey;
+}
+.input-group input {
+  height: 2.5em;
+  width: 220px;
+  padding-left: 3px;
+}
+.input-group select {
+  height: 2.8em;
+  width: 225px;
+}
+.result {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-top: 10px;
+}
+.result span {
+  display: block;
+  color: #ff6d50;
+  padding-top: 5px;
+  min-height: 50px;
+}
