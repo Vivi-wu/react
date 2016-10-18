@@ -5,25 +5,43 @@ var supportFormat = [
     },
     {
         'pattern': 'YYYY-MM-DD HH:MM:SS',
-        'description': 'YYYY-MM-DD HH:MM:SS',
-        'func': function(data) {
-            return format1(data)
-        }
+        'description': 'YYYY-MM-DD HH:MM:SS'
+    },
+    {
+        'pattern': 'YYYY年M月D日 hr时mi分se秒',
+        'description': 'YYYY年M月D日 hr时mi分se秒'
     }
 ];
 
+
 /*
- * Set datetime format as "YYYY-MM-DD HH:MM:SS"
- * @param data 有效的JS日期字符串
+ * Set datetime format as the pattern specified
+ * @param {string} dateString 有效的JS日期字符串
+ * @param {string} pattern 支持的输出格式
  * @returns {string}
  */
-function format1(data) {
-    var a = new Date(data), b = '', c = '', d = '';
-    b = a.toLocaleDateString()
-    c = a.toTimeString()
-    d = b.replace(/\//g, '-') + ' ' + c.split(' ')[0]
+function formatDatetime(dateString, pattern) {
+    var a = new Date(dateString), b ='',
+        year = a.getFullYear(), month = a.getMonth()+1, day = a.getDate(),
+        time = a.toTimeString().split(' ')[0].split(':'),
+          hr = time[0], mi = time[1], se = time[2];
 
-    return d;
+    if (isNaN(year)||isNaN(month)||isNaN(day)||time[0]=='Invalid') {
+        b = '输入的日期无法识别呢-.-'
+    } else {
+        switch (pattern) {
+            case 'YYYY-MM-DD HH:MM:SS':
+                b = year +'-'+ month +'-'+ day +' '+ hr +':'+ mi +':'+ se;
+                break;
+            case 'YYYY年M月D日 hr时mi分se秒':
+                b = year +'年'+ month +'月'+ day +'日'+' '+ hr +'时'+ mi +'分'+ se +'秒';
+                break;
+            default:
+                break;
+        }
+    }
+
+    return b;
 }
 
 
@@ -70,10 +88,10 @@ class DatetimeFormatterInput extends React.Component {
         return (
             <form onSubmit={this.handleSubmit}>
                 <div className="input-group">
-                    <label>这里填日期：</label>
+                    <label>这里填日期时间：</label>
                     <input
                       type="text"
-                      placeholder="请输入JS可识别的日期字符串哟~"
+                      placeholder="请输入JS可识别的日期字符串~"
                       value={this.state.datetime}
                       onChange={this.handleDateInputChange}
                     />
@@ -86,7 +104,7 @@ class DatetimeFormatterInput extends React.Component {
                         ))}
                     </select>
                 </div>
-                <button type="submit">见证奇迹~</button>
+                <button type="submit">转换格式~</button>
             </form>
         )
     }
@@ -99,22 +117,8 @@ class DatetimeFormatter extends React.Component {
         this.handleInputChange = this.handleInputChange.bind(this)
     }
 
-    convertDatatimeFormat(dateString, format) {
-        var i = 0, j = supportFormat.length;
-        for (i; i < j; i++) {
-            if (supportFormat[i].pattern) {
-                if (new RegExp(supportFormat[i].pattern, 'i').test(format)) {
-                    return supportFormat[i].func(dateString)
-                }
-            } else {
-                continue
-            }
-        }
-        console.log('Oops! The format is out of our capacity.')
-    }
-
     handleInputChange(data) {
-        this.setState({ result: this.convertDatatimeFormat(data.datetime, data.format) })
+        this.setState({ result: this.props.formatDatetime(data.datetime, data.format) })
     }
 
     render() {
@@ -130,7 +134,8 @@ class DatetimeFormatter extends React.Component {
 
 // Specifies the default values for Root component's props
 DatetimeFormatter.defaultProps = {
-  formatList: supportFormat
+  formatList: supportFormat,
+  formatDatetime: formatDatetime
 };
 
 ReactDOM.render(
