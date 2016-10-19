@@ -45,19 +45,12 @@ function formatDatetime(dateString, pattern) {
 }
 
 
-class DatetimeFormatterResult extends React.Component {
-    constructor(props) {
-        super(props)
-    }
+const DatetimeFormatterResult = (props) => (
+    <div className="result">这是你想要的日期样式嘛？？<br/>
+        <span>{props.data}</span>
+    </div>
+)
 
-    render() {
-        return (
-            <div className="result">这是你想要的日期样式嘛？？<br/>
-                <span>{this.props.data}</span>
-            </div>
-        )
-    }
-}
 
 class DatetimeFormatterInput extends React.Component {
     constructor(props) {
